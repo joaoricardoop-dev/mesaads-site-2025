@@ -23,6 +23,11 @@ interface Props {
   /** textura dinâmica de arte (ex: upload do usuário). Substitui o canvas default. */
   artFront?: THREE.Texture | null
   artBack?: THREE.Texture | null
+  /** materiais prontos (sobrescrevem variant/artFront). Útil pra texturas de imagem carregadas externamente. */
+  frontMaterial?: THREE.Material
+  backMaterial?: THREE.Material
+  /** cor do anel lateral do disco (quando materiais externos são fornecidos) */
+  rimColor?: string
   radius?: number
   thickness?: number
 }
@@ -160,7 +165,16 @@ function buildBackTexture(variant: CoasterVariant): THREE.CanvasTexture {
 }
 
 export const Coaster3D = forwardRef<THREE.Group, Props>(function Coaster3D(
-  { variant, artFront, artBack, radius = 0.9, thickness = 0.06 },
+  {
+    variant,
+    artFront,
+    artBack,
+    frontMaterial: frontMaterialProp,
+    backMaterial: backMaterialProp,
+    rimColor,
+    radius = 0.9,
+    thickness = 0.06,
+  },
   ref,
 ) {
   // Textura frontal: arte custom OU canvas baseado na variant
@@ -176,7 +190,7 @@ export const Coaster3D = forwardRef<THREE.Group, Props>(function Coaster3D(
     return buildBackTexture(variant)
   }, [artBack, variant])
 
-  const frontMaterial = useMemo(() => {
+  const frontMaterialLocal = useMemo(() => {
     return new THREE.MeshStandardMaterial({
       map: frontTexture,
       roughness: 0.5,
@@ -184,7 +198,7 @@ export const Coaster3D = forwardRef<THREE.Group, Props>(function Coaster3D(
     })
   }, [frontTexture])
 
-  const backMaterial = useMemo(() => {
+  const backMaterialLocal = useMemo(() => {
     return new THREE.MeshStandardMaterial({
       map: backTexture,
       roughness: 0.55,
@@ -192,13 +206,16 @@ export const Coaster3D = forwardRef<THREE.Group, Props>(function Coaster3D(
     })
   }, [backTexture])
 
+  const frontMaterial = frontMaterialProp ?? frontMaterialLocal
+  const backMaterial = backMaterialProp ?? backMaterialLocal
+
   const rimMaterial = useMemo(
     () =>
       new THREE.MeshStandardMaterial({
-        color: new THREE.Color(variant?.color ?? '#0A0A0C'),
+        color: new THREE.Color(rimColor ?? variant?.color ?? '#0A0A0C'),
         roughness: 0.85,
       }),
-    [variant?.color],
+    [rimColor, variant?.color],
   )
 
   return (

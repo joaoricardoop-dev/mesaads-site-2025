@@ -1,76 +1,75 @@
-import { Canvas, useFrame } from '@react-three/fiber'
+import { Canvas, useFrame, useLoader } from '@react-three/fiber'
 import { Environment } from '@react-three/drei'
 import { useRef, useMemo, Suspense } from 'react'
 import * as THREE from 'three'
-import { Coaster3D, type CoasterVariant } from './Coaster3D'
+import { Coaster3D } from './Coaster3D'
 
-// Variants fiéis ao Media Kit Mesa.ads — frente e verso distintos.
-const VARIANTS: CoasterVariant[] = [
-  {
-    color: '#00E640',
-    ink: '#0A0A0C',
-    label: ['TENTA', 'ME', 'IGNORAR'],
-    footer: 'mesa.ads',
-    backColor: '#0A0A0C',
-    backInk: '#00E640',
-    backLabel: 'mesa.ads',
-  },
-  {
-    color: '#FF2E8A',
-    ink: '#0A0A0C',
-    label: ['ESSE ANÚNCIO', 'VOCÊ NÃO', 'PODE PULAR'],
-    footer: 'mesa.ads',
-    backColor: '#0A0A0C',
-    backInk: '#FF2E8A',
-    backLabel: 'mesa.ads',
-  },
-  {
-    color: '#F5E63A',
-    ink: '#0A0A0C',
-    label: ['OLHA', 'PRA MIM!', 'JÁ OLHOU'],
-    footer: 'mesa.ads',
-    backColor: '#0A0A0C',
-    backInk: '#F5E63A',
-    backLabel: 'mesa.ads',
-  },
-  {
-    color: '#0A0A0C',
-    ink: '#00E640',
-    label: ['QUER', 'ANUNCIAR', 'AQUI?'],
-    footer: 'mesa.ads',
-    backColor: '#00E640',
-    backInk: '#0A0A0C',
-    backLabel: 'mesa.ads',
-  },
-  {
-    color: '#F27A1A',
-    ink: '#0A0A0C',
-    label: ['SUA MARCA', 'NESSA', 'MESA'],
-    footer: 'mesa.ads',
-    backColor: '#0A0A0C',
-    backInk: '#F27A1A',
-    backLabel: 'mesa.ads',
-  },
-  {
-    color: '#F5F5F3',
-    ink: '#0A0A0C',
-    label: ['NA MESA', 'DO', 'CLIENTE'],
-    footer: 'mesa.ads',
-    backColor: '#0A0A0C',
-    backInk: '#F5F5F3',
-    backLabel: 'mesa.ads',
-  },
+/**
+ * Artes reais das campanhas Mesa.ads, aplicadas como textura no circleGeometry.
+ * Cada arquivo é um PNG quadrado com o círculo do porta-copo centralizado.
+ * `rim` = cor do anel lateral do disco 3D (harmoniza com a arte).
+ * `zoom` = fator de crop UV para o círculo da arte preencher o circleGeometry
+ *          sem deixar aparecer a borda quadrada de fundo.
+ */
+interface CoasterArt {
+  url: string
+  rim: string
+  zoom: number
+}
+
+const COASTERS: CoasterArt[] = [
+  { url: '/coasters/coaster-nao-pode-pular.png', rim: '#0A0A0C', zoom: 0.92 },
+  { url: '/coasters/coaster-sua-marca.png', rim: '#0A0A0C', zoom: 0.92 },
+  { url: '/coasters/coaster-mesa-ads-orange.png', rim: '#D1620F', zoom: 0.92 },
+  { url: '/coasters/coaster-unipar-harmonia.png', rim: '#B09C7A', zoom: 0.92 },
+  { url: '/coasters/coaster-unipar-parque.png', rim: '#C3BEB4', zoom: 0.92 },
 ]
 
 interface FloatingProps {
   index: number
   total: number
-  variant: CoasterVariant
+  art: CoasterArt
   pointer: React.MutableRefObject<{ x: number; y: number }>
 }
 
-function FloatingCoaster({ index, total, variant, pointer }: FloatingProps) {
+function FloatingCoaster({ index, total, art, pointer }: FloatingProps) {
   const group = useRef<THREE.Group>(null)
+  const texture = useLoader(THREE.TextureLoader, art.url) as THREE.Texture
+
+  // Ajuste da textura uma única vez (colorSpace, anisotropy, crop central)
+  useMemo(() => {
+    texture.colorSpace = THREE.SRGBColorSpace
+    texture.anisotropy = 8
+    // Crop central: elimina a borda quadrada ao redor do círculo PNG
+    const off = (1 - art.zoom) / 2
+    texture.repeat.set(art.zoom, art.zoom)
+    texture.offset.set(off, off)
+    texture.needsUpdate = true
+  }, [texture, art.zoom])
+
+  // Material da frente com a textura real
+  const frontMaterial = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        map: texture,
+        roughness: 0.55,
+        metalness: 0.05,
+      }),
+    [texture],
+  )
+
+  // Material do verso usa a MESMA textura, na mesma orientação da frente.
+  // Fisicamente inconsistente (uma peça real teria verso diferente), mas
+  // garante que a arte nunca aparece espelhada conforme o coaster roda.
+  const backMaterial = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        map: texture,
+        roughness: 0.55,
+        metalness: 0.05,
+      }),
+    [texture],
+  )
 
   const base = useMemo(() => {
     const angle = (index / total) * Math.PI * 2
@@ -80,7 +79,7 @@ function FloatingCoaster({ index, total, variant, pointer }: FloatingProps) {
       radius,
       yOff: ((index * 13) % 7) * 0.18 - 0.6,
       spin: 0.2 + ((index * 7) % 5) * 0.05,
-      tilt: ((index * 29) % 7) * 0.07 - 0.25,
+      tilt: ((index * 29) % 7) * 0.03 - 0.1, // tilt reduzido pra não virar
     }
   }, [index, total])
 
@@ -95,8 +94,11 @@ function FloatingCoaster({ index, total, variant, pointer }: FloatingProps) {
 
     group.current.position.set(x, y, z)
 
-    const targetRotY = -angle + pointer.current.x * 0.3
-    const targetRotX = base.tilt + pointer.current.y * 0.3
+    // Rotação Y limitada a ±0.15rad (~9°) + parallax do pointer — coaster NÃO vira.
+    // Rotação X idem (apenas tilt sutil).
+    // Rotação Z livre (spin no próprio plano, sempre mostra a face frontal).
+    const targetRotY = pointer.current.x * 0.12
+    const targetRotX = base.tilt + pointer.current.y * 0.12
     const targetRotZ = t * 0.35 + index * 0.4
 
     group.current.rotation.y += (targetRotY - group.current.rotation.y) * Math.min(1, delta * 3)
@@ -106,7 +108,13 @@ function FloatingCoaster({ index, total, variant, pointer }: FloatingProps) {
 
   return (
     <group ref={group}>
-      <Coaster3D variant={variant} radius={0.75} thickness={0.05} />
+      <Coaster3D
+        frontMaterial={frontMaterial}
+        backMaterial={backMaterial}
+        rimColor={art.rim}
+        radius={0.75}
+        thickness={0.05}
+      />
     </group>
   )
 }
@@ -140,12 +148,12 @@ export function CoasterScene({ className }: { className?: string }) {
           <spotLight position={[0, 6, 6]} angle={0.6} intensity={0.4} color="#FF2E8A" />
           <Environment preset="city" />
 
-          {VARIANTS.map((v, i) => (
+          {COASTERS.map((art, i) => (
             <FloatingCoaster
-              key={i}
+              key={art.url}
               index={i}
-              total={VARIANTS.length}
-              variant={v}
+              total={COASTERS.length}
+              art={art}
               pointer={pointer}
             />
           ))}
