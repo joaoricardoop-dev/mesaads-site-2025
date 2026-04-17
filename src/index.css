@@ -1,0 +1,233 @@
+@import '@fontsource-variable/bricolage-grotesque/index.css';
+@import '@fontsource-variable/jetbrains-mono/index.css';
+@import '@fontsource/instrument-serif/400.css';
+@import '@fontsource/instrument-serif/400-italic.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Tokens semânticos — mudam de acordo com [data-theme]
+   ============================================================ */
+
+:root,
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  /* Superfícies — RGB cru para Tailwind usar opacity */
+  --surface-950-rgb: 4 4 5;
+  --surface-900-rgb: 10 10 12;
+  --surface-800-rgb: 20 20 22;
+  --surface-700-rgb: 28 28 32;
+  --surface-600-rgb: 37 37 41;
+  --surface-500-rgb: 58 58 64;
+
+  /* Tinta */
+  --chalk-rgb: 245 245 243;
+  --chalk-muted-rgb: 166 166 170;
+  --chalk-dim-rgb: 107 107 112;
+
+  /* Accent */
+  --c-neon-rgb: 0 230 64;
+  --c-neon-soft-rgb: 0 255 86;
+  --c-magenta-rgb: 255 46 138;
+  --c-amber-rgb: 245 230 58;
+  --c-orange-rgb: 242 122 26;
+  --c-ice-rgb: 184 241 255;
+
+  /* Hex equivalentes — usados em gradientes, box-shadow literal, etc. */
+  --surface-950: #040405;
+  --surface-900: #0A0A0C;
+  --chalk: #F5F5F3;
+  --c-neon: #00E640;
+  --c-magenta: #FF2E8A;
+  --c-amber: #F5E63A;
+  --c-orange: #F27A1A;
+  --c-ice: #B8F1FF;
+
+  /* Hairlines */
+  --hairline: rgba(255, 255, 255, 0.08);
+  --hairline-bold: rgba(255, 255, 255, 0.14);
+
+  /* Grain / scene 3D */
+  --grain-opacity: 0.06;
+  --grain-blend: overlay;
+  --scene-saturate: 0.9;
+  --scene-opacity: 0.75;
+
+  --veil-radial: radial-gradient(ellipse at center, rgba(4,4,5,0) 45%, rgba(4,4,5,0.3) 90%);
+
+  --ease-apple: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-swift: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --surface-950-rgb: 245 245 243;
+  --surface-900-rgb: 237 237 234;
+  --surface-800-rgb: 226 226 222;
+  --surface-700-rgb: 210 210 205;
+  --surface-600-rgb: 189 189 183;
+  --surface-500-rgb: 154 154 147;
+
+  --chalk-rgb: 10 10 12;
+  --chalk-muted-rgb: 68 68 74;
+  --chalk-dim-rgb: 107 107 112;
+
+  --c-neon-rgb: 0 168 56;
+  --c-neon-soft-rgb: 0 196 66;
+  --c-magenta-rgb: 217 30 110;
+  --c-amber-rgb: 199 166 0;
+  --c-orange-rgb: 209 98 15;
+  --c-ice-rgb: 46 142 184;
+
+  --surface-950: #F5F5F3;
+  --surface-900: #EDEDEA;
+  --chalk: #0A0A0C;
+  --c-neon: #00A838;
+  --c-magenta: #D91E6E;
+  --c-amber: #C7A600;
+  --c-orange: #D1620F;
+  --c-ice: #2E8EB8;
+
+  --hairline: rgba(10, 10, 12, 0.08);
+  --hairline-bold: rgba(10, 10, 12, 0.14);
+
+  --grain-opacity: 0.03;
+  --grain-blend: multiply;
+  --scene-saturate: 1.05;
+  --scene-opacity: 0.85;
+
+  --veil-radial: radial-gradient(ellipse at center, rgba(245,245,243,0) 45%, rgba(245,245,243,0.3) 90%);
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--surface-950);
+  color: var(--chalk);
+  font-family: 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif;
+  font-optical-sizing: auto;
+  font-feature-settings: 'ss01', 'ss02', 'cv01';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  transition: background 280ms var(--ease-apple), color 280ms var(--ease-apple);
+}
+
+::selection {
+  background: var(--c-neon);
+  color: var(--surface-950);
+}
+
+:focus-visible {
+  outline: 2px solid var(--c-neon);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.font-mono,
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--hairline);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--hairline-bold);
+}
+
+/* ================= Grain overlay ================= */
+.grain::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  opacity: var(--grain-opacity);
+  mix-blend-mode: var(--grain-blend);
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* ================= Spotlight ================= */
+.spotlight {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle 800px at var(--mx, 50%) var(--my, 30%),
+    rgba(0, 230, 64, 0.08),
+    rgba(0, 230, 64, 0) 60%
+  );
+  z-index: 0;
+  transition: background 400ms var(--ease-apple);
+}
+
+:root[data-theme='light'] .spotlight {
+  background: radial-gradient(
+    circle 800px at var(--mx, 50%) var(--my, 30%),
+    rgba(0, 168, 56, 0.06),
+    rgba(0, 168, 56, 0) 60%
+  );
+}
+
+/* ================= Neon chip glow ================= */
+.glow-neon {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--c-neon) 50%, transparent),
+    0 0 30px -8px color-mix(in srgb, var(--c-neon) 50%, transparent),
+    inset 0 0 40px -20px color-mix(in srgb, var(--c-neon) 35%, transparent);
+}
+
+.glow-magenta {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--c-magenta) 50%, transparent),
+    0 0 30px -8px color-mix(in srgb, var(--c-magenta) 50%, transparent),
+    inset 0 0 40px -20px color-mix(in srgb, var(--c-magenta) 30%, transparent);
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+.text-pretty {
+  text-wrap: pretty;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.15s !important;
+  }
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--chalk);
+  -webkit-box-shadow: 0 0 0 1000px var(--surface-800) inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
