@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { SiteHeader } from '../components/site/SiteHeader'
 import { SiteFooter } from '../components/site/SiteFooter'
 import { HomeHero } from '../components/site/sections/HomeHero'
@@ -13,19 +12,15 @@ import { WhyMesa } from '../components/site/sections/WhyMesa'
 import { Terms } from '../components/site/sections/Terms'
 import { FinalCTA } from '../components/site/sections/FinalCTA'
 import { WhatsAppFloat } from '../components/ui/WhatsAppFloat'
+import { CustomCursor } from '../components/ui/CustomCursor'
+import { useSmoothScroll } from '../lib/useSmoothScroll'
 
 export default function HomePage() {
-  // Smooth scroll para anchors
-  useEffect(() => {
-    document.documentElement.style.scrollBehavior = 'smooth'
-    return () => {
-      document.documentElement.style.scrollBehavior = ''
-    }
-  }, [])
+  useSmoothScroll()
 
   return (
     <div className="relative min-h-screen grain overflow-x-hidden">
-      {/* Ambient orbs (mesma técnica do AppShell) */}
+      {/* Ambient orbs */}
       <div
         aria-hidden
         className="pointer-events-none fixed -top-40 -left-32 h-[520px] w-[520px] rounded-full"
@@ -64,6 +59,7 @@ export default function HomePage() {
       <SiteFooter />
 
       <WhatsAppFloat message="Olá! Quero saber mais sobre anunciar no mesa.ads." />
+      <CustomCursor />
     </div>
   )
 }

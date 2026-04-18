@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import { MesaAdsLogo, ArrowRight } from '../../assets/logo'
 import { Button } from '../ui/Button'
 import { ThemeToggle } from '../ui/ThemeToggle'
+import { useNavTheme } from '../../lib/useNavTheme'
 
 const NAV = [
   { id: 'formatos', label: 'Formatos', anchor: true },
@@ -20,6 +21,7 @@ export function SiteHeader() {
   const headerOpacity = useTransform(scrollY, [0, 120], [0, 1])
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
+  const navTheme = useNavTheme('dark')
 
   useEffect(() => {
     return scrollY.on('change', (v) => setScrolled(v > 24))
@@ -28,9 +30,11 @@ export function SiteHeader() {
   return (
     <>
       <header
+        data-theme={navTheme}
         className={clsx(
-          'fixed top-0 inset-x-0 z-40 transition-colors duration-300 ease-apple',
+          'fixed top-0 inset-x-0 z-40 transition-colors duration-500 ease-apple',
           scrolled ? 'border-b border-hairline' : 'border-b border-transparent',
+          navTheme === 'neon' && 'text-chalk',
         )}
       >
         <motion.div

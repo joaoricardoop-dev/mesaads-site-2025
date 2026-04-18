@@ -2,11 +2,14 @@ import { motion } from 'framer-motion'
 import { Section } from '../Section'
 import { Button } from '../../ui/Button'
 import { ArrowRight } from '../../../assets/logo'
+import { RevealText } from '../../ui/RevealText'
+import { ScrambleText } from '../../ui/ScrambleText'
 
 export function FinalCTA() {
   return (
     <Section pad="xl">
       <motion.div
+        data-nav-theme="neon"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-100px' }}
@@ -34,21 +37,22 @@ export function FinalCTA() {
             <span className="size-1 rounded-full bg-mesa-neon animate-pulse-neon" />
             pronto pra começar
           </div>
-          <h2 className="font-display font-medium text-[40px] lg:text-[72px] leading-[0.95] tracking-[-0.04em] text-chalk text-balance max-w-4xl mx-auto">
-            Sua marca na mesa
+          <h2 className="font-display font-medium text-[40px] lg:text-[80px] leading-[0.9] tracking-[-0.045em] text-chalk text-balance max-w-4xl mx-auto">
+            <RevealText by="word" stagger={0.06}>Sua marca na mesa</RevealText>
             <br />
             <span className="italic font-serif font-normal text-chalk/85">
-              já no próximo ciclo.
+              <RevealText by="word" stagger={0.06} delay={0.2}>
+                já no próximo ciclo.
+              </RevealText>
             </span>
           </h2>
-          <p className="mt-6 max-w-xl mx-auto text-[15px] lg:text-[17px] text-chalk/65 leading-relaxed">
-            Montar campanha leva 3 minutos. Em 25 dias, seu porta-copo está na mesa do seu
-            cliente.
+          <p className="mt-6 max-w-xl mx-auto text-[15px] lg:text-[17px] text-chalk/65 leading-snug">
+            3 minutos pra montar. 25 dias até chegar na mesa.
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <a href="https://app.mesaads.com.br/campanha">
               <Button size="lg" iconRight={<ArrowRight className="size-4" />}>
-                Montar campanha
+                <ScrambleText text="Montar campanha" trigger="hover" duration={500} />
               </Button>
             </a>
             <a href="mailto:anuncie@mesa.ads">

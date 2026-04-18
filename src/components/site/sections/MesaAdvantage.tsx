@@ -1,62 +1,76 @@
 import { motion } from 'framer-motion'
 import { Section, Eyebrow, SectionTitle } from '../Section'
-import { MESA_ADVANTAGE } from '../../../data/stats'
+import { RevealText } from '../../ui/RevealText'
+
+const STATS = [
+  { value: '74 min', label: 'comendo e bebendo' },
+  { value: '55 min', label: 'por refeição' },
+  { value: '2h20', label: 'em happy hour' },
+  { value: '+40×', label: 'mais atenção que digital' },
+]
 
 export function MesaAdvantage() {
   return (
-    <Section pad="lg" className="">
-      <Eyebrow>02 · A virada</Eyebrow>
-      <SectionTitle className="mt-5 max-w-3xl">
-        A mesa tem{' '}
-        <span className="italic font-serif font-normal text-chalk/85">tempo,</span> conversa e
-        contexto.
-      </SectionTitle>
-      <p className="mt-5 max-w-2xl text-[15px] lg:text-[17px] text-chalk/60 leading-relaxed">
-        O consumidor segura, lê e repete. O porta-copo é visto várias vezes durante a refeição —
-        frequência natural, sem mídia extra.
-      </p>
+    <Section pad="lg">
+      <div data-nav-theme="dark">
+        <Eyebrow>02 · A virada</Eyebrow>
+        <SectionTitle className="mt-5 max-w-3xl">
+          <RevealText by="word">A mesa tem</RevealText>{' '}
+          <span className="italic font-serif font-normal text-chalk/85">
+            <RevealText by="word" stagger={0.05}>
+              tempo,
+            </RevealText>
+          </span>{' '}
+          <RevealText by="word">conversa e contexto.</RevealText>
+        </SectionTitle>
 
-      <div className="mt-14 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
-        {MESA_ADVANTAGE.map((s, i) => (
-          <motion.div
-            key={s.label}
-            initial={{ opacity: 0, y: 28 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.6, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-            className="rounded-3xl border border-hairline bg-ink-900/40 backdrop-blur-sm p-7"
-          >
-            <div className="font-display text-[36px] leading-none tabular font-medium tracking-[-0.03em] text-chalk">
-              {s.value}
-            </div>
-            <div className="mt-3 text-[13px] text-chalk/70 leading-snug">{s.label}</div>
-            <div className="mt-4 text-[10px] tracking-[0.12em] uppercase text-chalk/35">
-              {s.source}
-            </div>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Punchline */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-60px' }}
-        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        className="mt-16 flex flex-col items-start gap-3 rounded-3xl border border-mesa-neon/30 bg-mesa-neon/5 p-8 lg:flex-row lg:items-center lg:justify-between"
-      >
-        <div className="font-display text-[22px] lg:text-[28px] tracking-tight text-chalk max-w-xl">
-          <span className="text-mesa-neon">Porta-copo = repetição natural.</span>
-          <br className="hidden lg:block" />
-          A mesma marca, vista várias vezes, sem custo de frequência.
+        <div className="mt-14 grid grid-cols-2 gap-3 md:grid-cols-4">
+          {STATS.map((s, i) => (
+            <motion.div
+              key={s.value}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.55, delay: i * 0.07, ease: [0.22, 1, 0.36, 1] }}
+              className="rounded-2xl border border-hairline bg-ink-900/40 backdrop-blur-sm p-5 lg:p-6"
+            >
+              <div className="font-display text-[34px] lg:text-[46px] leading-none tabular font-medium tracking-[-0.04em] text-chalk">
+                {s.value}
+              </div>
+              <div className="mt-3 text-[11px] lg:text-[13px] text-chalk/65 leading-snug">
+                {s.label}
+              </div>
+            </motion.div>
+          ))}
         </div>
-        <a
-          href="#formatos"
-          className="text-[13px] tracking-wide text-chalk/70 hover:text-chalk underline underline-offset-4"
+
+        {/* Punchline gigante */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="mt-16 relative overflow-hidden rounded-3xl border border-mesa-neon/30 bg-gradient-to-br from-mesa-neon/10 to-transparent px-8 py-12 lg:px-14 lg:py-16"
         >
-          Como funciona na prática →
-        </a>
-      </motion.div>
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -right-20 -top-20 size-80 rounded-full opacity-40"
+            style={{
+              background: 'radial-gradient(closest-side, rgba(0,230,64,0.35), transparent 70%)',
+            }}
+          />
+          <div className="relative font-display font-medium text-[32px] lg:text-[56px] leading-[0.95] tracking-[-0.035em] text-chalk max-w-4xl">
+            Porta-copo ={' '}
+            <span className="text-mesa-neon">repetição natural</span>.
+            <br />
+            <span className="italic font-serif font-normal text-chalk/75">
+              Várias vezes
+            </span>{' '}
+            por refeição.{' '}
+            <span className="italic font-serif font-normal text-chalk/75">Sem custo extra.</span>
+          </div>
+        </motion.div>
+      </div>
     </Section>
   )
 }
