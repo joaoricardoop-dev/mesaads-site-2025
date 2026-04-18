@@ -4,8 +4,9 @@ import { CoasterScene } from '../../hero/CoasterScene'
 import { Button } from '../../ui/Button'
 import { ArrowRight } from '../../../assets/logo'
 import { staggerContainer, staggerItem } from '../../../lib/motion'
-import { RevealText } from '../../ui/RevealText'
 import { ScrambleText } from '../../ui/ScrambleText'
+import { MagneticButton } from '../../ui/MagneticButton'
+import { KineticTitle } from '../../ui/KineticTitle'
 
 export function HomeHero() {
   const ref = useRef<HTMLElement>(null)
@@ -51,32 +52,18 @@ export function HomeHero() {
           className="max-w-[880px]"
         >
           <h1 className="font-display text-mega font-medium tracking-[-0.04em] text-chalk text-balance">
-            <RevealText by="word" as="span" duration={0.8} stagger={0.06} trigger="mount">
+            <KineticTitle as="span" trigger="mount" stagger={0.08}>
               Sua marca na mesa
-            </RevealText>
+            </KineticTitle>
             <br />
             <span className="italic font-serif font-normal text-chalk/90">
-              <RevealText
-                by="word"
-                as="span"
-                duration={0.8}
-                stagger={0.06}
-                delay={0.3}
-                trigger="mount"
-              >
+              <KineticTitle as="span" trigger="mount" stagger={0.08} delay={0.4}>
                 do seu
-              </RevealText>
+              </KineticTitle>
             </span>{' '}
-            <RevealText
-              by="word"
-              as="span"
-              duration={0.8}
-              stagger={0.06}
-              delay={0.55}
-              trigger="mount"
-            >
+            <KineticTitle as="span" trigger="mount" stagger={0.08} delay={0.6}>
               cliente.
-            </RevealText>
+            </KineticTitle>
           </h1>
 
           <motion.p
@@ -87,16 +74,16 @@ export function HomeHero() {
           </motion.p>
 
           <motion.div variants={staggerItem} className="mt-10 flex flex-wrap items-center gap-3">
-            <a href="https://app.mesaads.com.br/campanha">
+            <MagneticButton as="a" href="https://app.mesaads.com.br/campanha">
               <Button size="lg" iconRight={<ArrowRight className="size-4" />}>
                 <ScrambleText text="Montar campanha" trigger="hover" duration={500} />
               </Button>
-            </a>
-            <a href="#formatos">
+            </MagneticButton>
+            <MagneticButton as="a" href="#formatos" strength={0.2}>
               <Button size="lg" variant="ghost">
                 Ver formatos
               </Button>
-            </a>
+            </MagneticButton>
           </motion.div>
 
           <motion.div

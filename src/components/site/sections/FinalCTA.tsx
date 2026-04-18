@@ -2,8 +2,9 @@ import { motion } from 'framer-motion'
 import { Section } from '../Section'
 import { Button } from '../../ui/Button'
 import { ArrowRight } from '../../../assets/logo'
-import { RevealText } from '../../ui/RevealText'
 import { ScrambleText } from '../../ui/ScrambleText'
+import { MagneticButton } from '../../ui/MagneticButton'
+import { KineticTitle } from '../../ui/KineticTitle'
 
 export function FinalCTA() {
   return (
@@ -38,28 +39,28 @@ export function FinalCTA() {
             pronto pra começar
           </div>
           <h2 className="font-display font-medium text-[40px] lg:text-[80px] leading-[0.9] tracking-[-0.045em] text-chalk text-balance max-w-4xl mx-auto">
-            <RevealText by="word" stagger={0.06}>Sua marca na mesa</RevealText>
+            <KineticTitle as="span" stagger={0.08}>Sua marca na mesa</KineticTitle>
             <br />
             <span className="italic font-serif font-normal text-chalk/85">
-              <RevealText by="word" stagger={0.06} delay={0.2}>
+              <KineticTitle as="span" stagger={0.08} delay={0.35}>
                 já no próximo ciclo.
-              </RevealText>
+              </KineticTitle>
             </span>
           </h2>
           <p className="mt-6 max-w-xl mx-auto text-[15px] lg:text-[17px] text-chalk/65 leading-snug">
             3 minutos pra montar. 25 dias até chegar na mesa.
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-            <a href="https://app.mesaads.com.br/campanha">
+            <MagneticButton as="a" href="https://app.mesaads.com.br/campanha" strength={0.35}>
               <Button size="lg" iconRight={<ArrowRight className="size-4" />}>
                 <ScrambleText text="Montar campanha" trigger="hover" duration={500} />
               </Button>
-            </a>
-            <a href="mailto:anuncie@mesa.ads">
+            </MagneticButton>
+            <MagneticButton as="a" href="mailto:anuncie@mesa.ads" strength={0.22}>
               <Button size="lg" variant="ghost">
                 Falar com o time
               </Button>
-            </a>
+            </MagneticButton>
           </div>
           <p className="mt-10 text-[11px] tracking-[0.18em] uppercase text-chalk/40">
             Pix −5% · boleto parcelado · cartão 3× sem juros

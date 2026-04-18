@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { SiteHeader } from '../components/site/SiteHeader'
 import { SiteFooter } from '../components/site/SiteFooter'
 import { HomeHero } from '../components/site/sections/HomeHero'
@@ -13,53 +14,72 @@ import { Terms } from '../components/site/sections/Terms'
 import { FinalCTA } from '../components/site/sections/FinalCTA'
 import { WhatsAppFloat } from '../components/ui/WhatsAppFloat'
 import { CustomCursor } from '../components/ui/CustomCursor'
+import { CinematicLoader } from '../components/ui/CinematicLoader'
 import { useSmoothScroll } from '../lib/useSmoothScroll'
 
 export default function HomePage() {
   useSmoothScroll()
 
+  // Loader mostrado só na primeira visita da sessão
+  const [loaded, setLoaded] = useState(() => {
+    if (typeof sessionStorage === 'undefined') return false
+    return sessionStorage.getItem('mesa-ads:loaded') === '1'
+  })
+
+  useEffect(() => {
+    if (loaded) sessionStorage.setItem('mesa-ads:loaded', '1')
+    // trava scroll durante loader
+    document.body.style.overflow = loaded ? '' : 'hidden'
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [loaded])
+
   return (
-    <div className="relative min-h-screen grain overflow-x-hidden">
-      {/* Ambient orbs */}
-      <div
-        aria-hidden
-        className="pointer-events-none fixed -top-40 -left-32 h-[520px] w-[520px] rounded-full"
-        style={{
-          background:
-            'radial-gradient(closest-side, rgba(0,230,64,0.10), rgba(0,230,64,0) 70%)',
-          filter: 'blur(30px)',
-        }}
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none fixed -bottom-40 -right-32 h-[520px] w-[520px] rounded-full"
-        style={{
-          background:
-            'radial-gradient(closest-side, rgba(255,46,138,0.08), rgba(255,46,138,0) 70%)',
-          filter: 'blur(30px)',
-        }}
-      />
+    <>
+      {!loaded && <CinematicLoader onComplete={() => setLoaded(true)} minDuration={2600} />}
+      <div className="relative min-h-screen grain overflow-x-hidden">
+        {/* Ambient orbs */}
+        <div
+          aria-hidden
+          className="pointer-events-none fixed -top-40 -left-32 h-[520px] w-[520px] rounded-full"
+          style={{
+            background:
+              'radial-gradient(closest-side, rgba(0,230,64,0.10), rgba(0,230,64,0) 70%)',
+            filter: 'blur(30px)',
+          }}
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none fixed -bottom-40 -right-32 h-[520px] w-[520px] rounded-full"
+          style={{
+            background:
+              'radial-gradient(closest-side, rgba(255,46,138,0.08), rgba(255,46,138,0) 70%)',
+            filter: 'blur(30px)',
+          }}
+        />
 
-      <SiteHeader />
+        <SiteHeader />
 
-      <main className="relative z-10">
-        <HomeHero />
-        <AttentionProblem />
-        <MesaAdvantage />
-        <Formats />
-        <Cases />
-        <HowItWorks />
-        <Network />
-        <VipLounge />
-        <WhyMesa />
-        <Terms />
-        <FinalCTA />
-      </main>
+        <main className="relative z-10">
+          <HomeHero />
+          <AttentionProblem />
+          <MesaAdvantage />
+          <Formats />
+          <Cases />
+          <HowItWorks />
+          <Network />
+          <VipLounge />
+          <WhyMesa />
+          <Terms />
+          <FinalCTA />
+        </main>
 
-      <SiteFooter />
+        <SiteFooter />
 
-      <WhatsAppFloat message="Olá! Quero saber mais sobre anunciar no mesa.ads." />
-      <CustomCursor />
-    </div>
+        <WhatsAppFloat message="Olá! Quero saber mais sobre anunciar no mesa.ads." />
+        <CustomCursor />
+      </div>
+    </>
   )
 }
